@@ -1,0 +1,74 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><script src="https://d3js.org/d3.v7.min.js"></script><style>
+            #chart {
+                width: 600px;
+                height: 400px;
+                margin: auto;
+                font-family: Arial, sans-serif;
+            }
+            .title {
+                font-size: 20px;
+                text-align: center;
+            }
+            .bar:hover, .dot:hover, .arc:hover, .node:hover, .link:hover {
+                opacity: 0.7;
+            }
+            .node rect {
+                fill-opacity: 0.9;
+                stroke: #fff;
+                stroke-width: 1px;
+            }
+            .link {
+                fill: none;
+                stroke-opacity: 0.5;
+            }
+            .tooltip {
+                position: absolute;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 5px;
+                border-radius: 3px;
+                pointer-events: none;
+            }
+        </style></head><body><div id="chart"></div><script>
+            const data = {"name":"root","children":[{"name":"A","value":30},{"name":"B","value":80},{"name":"C","value":45}]};
+            const margin = {top: 20, right: 20, bottom: 30, left: 40};
+            const width = 540;
+            const height = 350;
+            const fullWidth = 600;
+            const fullHeight = 400;
+
+            const svg = d3.select('#chart')
+                .append('svg')
+                .attr('width', fullWidth)
+                .attr('height', fullHeight)
+                .append('g')
+                .attr('transform', `translate(40,20)`);
+
+            svg.append('text')
+                .attr('class', 'title')
+                .attr('x', width / 2)
+                .attr('y', -10)
+                .attr('text-anchor', 'middle')
+                .text('Treemap');
+
+            const tooltip = d3.select('body').append('div')
+                .attr('class', 'tooltip')
+                .style('opacity', 0);
+        
+            const root = d3.hierarchy(data)
+                .sum(d => d.value);
+
+            d3.treemap()
+                .size([width, height])
+                .padding(2)
+                (root);
+
+            svg.selectAll('rect')
+                .data(root.leaves())
+                .enter().append('rect')
+                .attr('x', d => d.x0)
+                .attr('y', d => d.y0)
+                .attr('width', d => d.x1 - d.x0)
+                .attr('height', d => d.y1 - d.y0)
+                .attr('fill', (d, i) => ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b"][i % ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b"].length]);
+        </script></body></html>
